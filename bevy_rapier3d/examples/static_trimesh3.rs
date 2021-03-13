@@ -16,12 +16,12 @@ mod ui;
 
 fn main() {
     App::build()
-        .add_resource(ClearColor(Color::rgb(
+        .insert_resource(ClearColor(Color::rgb(
             0xF9 as f32 / 255.0,
             0xF9 as f32 / 255.0,
             0xFF as f32 / 255.0,
         )))
-        .add_resource(Msaa::default())
+        .insert_resource(Msaa::default())
         .add_plugins(DefaultPlugins)
         .add_plugin(bevy_winit::WinitPlugin::default())
         .add_plugin(bevy_wgpu::WgpuPlugin::default())
@@ -31,7 +31,7 @@ fn main() {
         .add_startup_system(setup_graphics.system())
         .add_startup_system(setup_physics.system())
         .add_startup_system(enable_physics_profiling.system())
-        .add_resource(BallState::default())
+        .insert_resource(BallState::default())
         .add_system(ball_spawner.system())
         .run();
 }
@@ -40,13 +40,13 @@ fn enable_physics_profiling(mut pipeline: ResMut<PhysicsPipeline>) {
     pipeline.counters.enable()
 }
 
-fn setup_graphics(commands: &mut Commands) {
+fn setup_graphics(mut commands: Commands) {
     commands
         .spawn(LightBundle {
             transform: Transform::from_translation(Vec3::new(1000.0, 100.0, 2000.0)),
             ..Default::default()
         })
-        .spawn(Camera3dBundle {
+        .spawn(PerspectiveCameraBundle {
             transform: Transform::from_matrix(Mat4::face_toward(
                 Vec3::new(-15.0, 8.0, 15.0),
                 Vec3::new(-5.0, 0.0, 5.0),
@@ -60,7 +60,7 @@ fn ramp_size() -> Vec3 {
     Vec3::new(10.0, 1.0, 1.0)
 }
 
-pub fn setup_physics(commands: &mut Commands) {
+pub fn setup_physics(mut commands: Commands) {
     use bevy_rapier3d::na::Point3;
 
     // Create the ramp.
@@ -144,7 +144,7 @@ impl Default for BallState {
 }
 
 fn ball_spawner(
-    commands: &mut Commands,
+    mut commands: Commands,
     integration_parameters: Res<IntegrationParameters>,
     mut ball_state: ResMut<BallState>,
 ) {

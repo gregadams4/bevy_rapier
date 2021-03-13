@@ -19,13 +19,13 @@ pub struct DespawnResource {
 
 fn main() {
     App::build()
-        .add_resource(ClearColor(Color::rgb(
+        .insert_resource(ClearColor(Color::rgb(
             0xF9 as f32 / 255.0,
             0xF9 as f32 / 255.0,
             0xFF as f32 / 255.0,
         )))
-        .add_resource(Msaa::default())
-        .add_resource(DespawnResource::default())
+        .insert_resource(Msaa::default())
+        .insert_resource(DespawnResource::default())
         .add_plugins(DefaultPlugins)
         .add_plugin(bevy_winit::WinitPlugin::default())
         .add_plugin(bevy_wgpu::WgpuPlugin::default())
@@ -43,13 +43,13 @@ fn enable_physics_profiling(mut pipeline: ResMut<PhysicsPipeline>) {
     pipeline.counters.enable()
 }
 
-fn setup_graphics(commands: &mut Commands) {
+fn setup_graphics(mut commands: Commands) {
     commands
         .spawn(LightBundle {
             transform: Transform::from_translation(Vec3::new(1000.0, 100.0, 2000.0)),
             ..Default::default()
         })
-        .spawn(Camera3dBundle {
+        .spawn(PerspectiveCameraBundle {
             transform: Transform::from_matrix(Mat4::face_toward(
                 Vec3::new(-30.0, 30.0, 100.0),
                 Vec3::new(0.0, 10.0, 0.0),
@@ -59,7 +59,7 @@ fn setup_graphics(commands: &mut Commands) {
         });
 }
 
-pub fn setup_physics(commands: &mut Commands, mut despawn: ResMut<DespawnResource>) {
+pub fn setup_physics(mut commands: Commands, mut despawn: ResMut<DespawnResource>) {
     /*
      * Ground
      */
@@ -104,7 +104,7 @@ pub fn setup_physics(commands: &mut Commands, mut despawn: ResMut<DespawnResourc
     }
 }
 
-pub fn despawn(commands: &mut Commands, time: Res<Time>, mut despawn: ResMut<DespawnResource>) {
+pub fn despawn(mut commands: Commands, time: Res<Time>, mut despawn: ResMut<DespawnResource>) {
     if time.seconds_since_startup() > 5.0 {
         if let Some(entity) = despawn.entity {
             println!("Despawning ground entity");

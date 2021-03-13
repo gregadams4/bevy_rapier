@@ -6,7 +6,7 @@ use bevy_rapier2d::rapier::na::Vector2;
 
 fn main() {
     App::build()
-        .add_resource(WindowDescriptor {
+        .insert_resource(WindowDescriptor {
             title: "Player Movement Example".to_string(),
             width: 1000.0,
             height: 1000.0,
@@ -25,13 +25,13 @@ fn main() {
 struct Player(f32);
 
 fn spawn_player(
-    commands: &mut Commands,
+    mut commands: Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut rapier_config: ResMut<RapierConfiguration>,
 ) {
     // Set gravity to 0.0 and spawn camera.
     rapier_config.gravity = Vector2::zeros();
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(OrthographicCameraBundle::new_2d());
 
     let sprite_size_x = 40.0;
     let sprite_size_y = 40.0;
